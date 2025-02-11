@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Us</title>
+  <link rel="stylesheet" href="govstyles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header>
+    <nav>
+      <ul>
+        <li><a href="govindex.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="feedback.html">Feedback</a></li>
+        <li><a href="services.html">Services</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section class="contact">
+      <h1>Contact Us</h1>
+      <p>If you have any questions or need assistance, feel free to reach out to us.</p>
+      <form id="contactForm">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+
+        <label for="message">Message:</label>
+        <textarea id="message" name="message" rows="5" required></textarea>
+
+        <button type="submit" class="cta-button">Send Message</button>
+      </form>
+      <div id="loadingSpinner">
+        <div class="spinner"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2023 Government Feedback Portal. All rights reserved.</p>
+    <div class="social-icons">
+      <a href="https://facebook.com" target="_blank">Facebook</a>
+      <a href="https://twitter.com" target="_blank">Twitter</a>
+      <a href="https://instagram.com" target="_blank">Instagram</a>
+    </div>
+  </footer>
+
+  <script>
+    // Handle contact form submission
+    const contactForm = document.getElementById('contactForm');
+
+    contactForm.addEventListener('submit', (e) => {
+      e.preventDefault(); // Stop the form from refreshing the page
+
+      // Show loading spinner
+      document.getElementById('loadingSpinner').style.display = 'block';
+
+      // Get the values from the form
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const message = document.getElementById('message').value;
+
+      // Log the form data
+      console.log("Form Data:", { name, email, message });
+
+      // Save the contact message to Google Sheets using SheetDB
+      const sheetDBUrl = "https://sheetdb.io/api/v1/ew7tj8t2rrws3"; // Replace with your SheetDB API URL
+
+      fetch(sheetDBUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          data: {
+            Name: name,
+            Email: email,
+            Message: message,
+            Timestamp: new Date().toISOString(),
+          },
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("Contact message saved to Google Sheets:", data);
+          alert('Thank you for contacting us!');
+          contactForm.reset(); // Clear the form
+        })
+        .catch((error) => {
+          console.error("Error saving contact message:", error);
+          alert('An error occurred. Please try again.');
+        })
+        .finally(() => {
+          // Hide loading spinner
+          document.getElementById('loadingSpinner').style.display = 'none';
+        });
+    });
+  </script>
+</body>
+</html>
