@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Policy Suggestions</title>
+  <link rel="stylesheet" href="govstyles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header>
+    <nav>
+      <ul>
+        <li><a href="govindex.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="feedback.html">Feedback</a></li>
+        <li><a href="services.html">Services</a></li>
+        <li><a href="policy-suggestions.html">Policy Suggestions</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section class="policy-suggestions">
+      <h1>Policy Suggestions</h1>
+      <p>Have an idea for a new policy or a change to an existing one? Share it with us!</p>
+      <form id="policyForm">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+
+        <label for="policyTitle">Policy Title:</label>
+        <input type="text" id="policyTitle" name="policyTitle" required>
+
+        <label for="policyDescription">Policy Description:</label>
+        <textarea id="policyDescription" name="policyDescription" rows="5" required></textarea>
+
+        <button type="submit" class="cta-button">Submit Suggestion</button>
+      </form>
+      <div id="loadingSpinner">
+        <div class="spinner"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2023 Government Feedback Portal. All rights reserved.</p>
+    <div class="social-icons">
+      <a href="https://facebook.com" target="_blank">Facebook</a>
+      <a href="https://twitter.com" target="_blank">Twitter</a>
+      <a href="https://instagram.com" target="_blank">Instagram</a>
+    </div>
+  </footer>
+
+  <script>
+    // Handle policy suggestion form submission
+    const policyForm = document.getElementById('policyForm');
+
+    policyForm.addEventListener('submit', (e) => {
+      e.preventDefault(); // Stop the form from refreshing the page
+
+      // Show loading spinner
+      document.getElementById('loadingSpinner').style.display = 'block';
+
+      // Get the values from the form
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const policyTitle = document.getElementById('policyTitle').value;
+      const policyDescription = document.getElementById('policyDescription').value;
+
+      // Log the form data
+      console.log("Form Data:", { name, email, policyTitle, policyDescription });
+
+      // Save the policy suggestion to Google Sheets using SheetDB
+      const sheetDBUrl = "https://sheetdb.io/api/v1/mczrfbw9zpumj"; // Replace with your SheetDB API URL
+
+      fetch(sheetDBUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          data: {
+            Name: name,
+            Email: email,
+            PolicyTitle: policyTitle,
+            PolicyDescription: policyDescription,
+            Timestamp: new Date().toISOString(),
+          },
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("Policy suggestion saved to Google Sheets:", data);
+          alert('Thank you for your suggestion!');
+          policyForm.reset(); // Clear the form
+        })
+        .catch((error) => {
+          console.error("Error saving policy suggestion:", error);
+          alert('An error occurred. Please try again.');
+        })
+        .finally(() => {
+          // Hide loading spinner
+          document.getElementById('loadingSpinner').style.display = 'none';
+        });
+    });
+  </script>
+</body>
+</html>
